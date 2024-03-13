@@ -3,10 +3,10 @@ import c from "../data/langsiso3.json";
 export default function LangWidget(props) {
   let { code, languages, setLanguages } = props;
   return (
-    <div className="flex flex-row gap-4 text-wrap justify-between flex-wrap px-4 py-2 bg-slate-300 text-black text-lg">
+    <div className="flex flex-row flex-wrap items-center justify-between gap-4 px-2 py-1 text-sm text-black sm:py-2 sm:px-4 text-wrap bg-slate-300 md:text-lg">
       <span>{c[code].replace("; ", " / ")}</span>
       <span
-      className="cursor-pointer"
+        className="cursor-pointer"
         onClick={() => {
           let ind = languages.findIndex((l) => l == code);
           let ls = languages;

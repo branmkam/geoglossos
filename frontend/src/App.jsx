@@ -16,8 +16,10 @@ import AnimatedNumber from "./components/AnimatedNumber";
 import MapEvents from "./components/MapEvents";
 import LangWidget from "./components/LangWidget";
 import Autocomplete from "./components/Autocomplete";
+import GeoglossosName from "./components/GeoglossosName";
 
 import axios from "axios";
+import ModeToggle from "./components/ModeToggle";
 
 function App() {
   const [dark, setDark] = useState(true);
@@ -47,10 +49,6 @@ function App() {
     }
   }
 
-  const buttonclasses = dark
-    ? "bg-slate-300 text-slate-800"
-    : "bg-slate-800 text-slate-300";
-
   const RecenterAutomatically = () => {
     const map = useMap();
     useEffect(() => {
@@ -61,53 +59,64 @@ function App() {
     return null;
   };
 
-  useEffect(() => {
-    //add to db
-    const fetchPoints = async () => {
-      try {
-        const response = await axios.get("http://localhost:4002/points"); // Fetch points from our API
-        console.log(response.data);
-        //setPoints(response.data); // Update state with fetched points
-      } catch (error) {
-        console.error("Error fetching points:", error);
-      }
-    };
+  const fetchPoints = async () => {
+    try {
+      const response = await axios.get("http://localhost:4002/points"); // Fetch points from our API
+      setPoints(response.data); // Update state with fetched points
+    } catch (error) {
+      console.error("Error fetching points:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchPoints();
   }, []);
 
+  useEffect(() => {
+    console.log(cityData);
+  }, [cityData]);
+
   return (
-    <div className="flex text-center text-base md:text-lg flex-col items-center justify-center w-screen h-screen font-oxygen">
+    <div className="flex flex-col items-center justify-center w-screen h-screen text-base text-center md:text-lg font-oxygen">
       <div
-        className={`flex flex-col gap-2 font-oxygen z-40 fixed top-2 left-2 ${
+        className={`flex flex-col items-start gap-2 font-oxygen z-40 fixed top-2 left-2 ${
           dark ? "text-slate-300" : "text-slate-800"
         }`}
       >
-        <h1 className="text-3xl md:text-5xl font-bold">Geoglossos</h1>
+        <GeoglossosName />
         {/* will be animated, flashing different scripts every second (e.g. Greek, Cyrillic, Arabic, etc.) using useInterval */}
-        <p>
-          <AnimatedNumber
-            end={points.length + (cityData.langs ? 1 : 0)}
-            duration={1.5}
-          />{" "}
-          geoglossers
+        <div>
+          <span className="pl-2 text-xl md:text-3xl">
+            <AnimatedNumber end={points.length} duration={1.5} />{" "}
+          </span>
+          <span className="text-base md:text-lg">geoglossers</span>
+        </div>
+      </div>
+
+      <ModeToggle dark={dark} setDark={setDark} />
+
+      <div className="fixed z-40 text-right right-2 bottom-5">
+        <p className={dark ? "text-slate-200" : "text-slate-800"}>
+          by{" "}
+          <a
+            href="https://brandonkaminski.dev"
+            className="cursor-pointer hover:text-red-400"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Brandon
+            <br />
+            Kaminski
+          </a>
         </p>
       </div>
 
-      {
-        <button
-          className={`fixed font-oxygen top-2 right-2 px-4 py-2 text-base md:text-2xl z-40 rounded-lg ${buttonclasses}`}
-          onClick={() => setDark((d) => !d)}
-        >
-          {dark ? "light " : "dark "} mode
-        </button>
-      }
-
       {step >= 3 && (
-        <div className="border-black border-[1px] fixed bottom-2 z-40 left-2 p-2 w-56 h-48 sm:w-60 rounded-lg bg-[#ffffffcc]">
-          <p className="font-bold text-xl">Filter</p>
-          <div className="flex text-wrap flex-col h-36 overflow-y-auto">
+        <div className="border-black border-[1px] fixed bottom-2 z-40 left-2 p-2 w-56 sm:w-60 md:w-80 rounded-lg bg-[#ffffffcc]">
+          <p className="text-xl font-bold">Filter</p>
+          <div className="flex flex-col overflow-y-auto text-wrap h-36">
             {Object.keys(counts)
+              .sort((a, b) => c[a].localeCompare(c[b]))
               .sort((a, b) => counts[b] - counts[a])
               .map((k) => (
                 <div
@@ -121,7 +130,7 @@ function App() {
                   }`}
                 >
                   <p className=" text-wrap">{c[k].replace("; ", "/")}</p>
-                  <p>({counts[k]})</p>
+                  <p>{counts[k]}</p>
                 </div>
               ))}
           </div>
@@ -130,29 +139,28 @@ function App() {
 
       {step < 3 && (
         <div
-          className={`animate-fadein z-40 flex flex-col items-center justify-between gap-2 md:gap-10 px-4 py-8 border-2 border-black ${
+          className={`animate-fadein z-40 flex flex-col items-center justify-center gap-2 md:gap-10 px-4 py-8 border-2 border-black ${
             dark ? "bg-[#ffffffbb]" : "bg-[#ddddeeaa]"
           } rounded-xl sm:w-1/2 w-5/6 max-h-3/4`}
         >
           {/* step 1 */}
           {step == 0 && (
             <>
-              <div className="flex flex-col justify-center items-center gap-1 w-full">
+              <div className="flex flex-col items-center justify-center w-full gap-1">
                 <p>What's your first name?</p>
                 <input
-                  className="w-5/6 sm:w-5/8 p-2 rounded-lg"
+                  className="w-5/6 p-2 rounded-lg sm:w-5/8"
                   placeholder="Type here... (optional)"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <p>What city are you from? Click on the map.*</p>
+              <p>What city are you from? Click below.*</p>
               <MapContainer
-                className="z-40 h-48 sm:h-56 md:h-64 w-full md:w-5/6 rounded-lg"
+                className="z-40 w-full h-48 rounded-lg sm:h-56 md:h-64 md:w-5/6"
                 center={[lat, lng]}
                 zoom={4}
                 zoomControl={false}
-                onClick={(e) => console.log(e)}
               >
                 <TileLayer
                   attribution="Tiles &copy; Esri"
@@ -185,7 +193,7 @@ function App() {
                   {cityData.country}
                 </p>
               ) : (
-                <p className="text-center text-wrap text-lg text-slate-800">
+                <p className="text-lg text-center text-wrap text-slate-800">
                   No place selected
                 </p>
               )}
@@ -212,16 +220,16 @@ function App() {
                   {cityData.country}.
                 </span>
               </p>
-              <p className="font-bold text-lg md:text-xl">
+              <p className="text-lg font-bold md:text-xl">
                 What languages do you speak{name && ", " + name}?
               </p>
-              <div className="flex flex-col gap-2 w-full sm:w-5/6">
+              <div className="flex flex-col w-full gap-2 sm:w-5/6">
                 <Autocomplete
                   languages={languages}
                   setLanguages={setLanguages}
                 />
                 {languages.length > 0 && (
-                  <div className="flex flex-row min-h-10 flex-wrap gap-2">
+                  <div className="flex flex-row flex-wrap gap-2 min-h-10">
                     {languages.map((l) => (
                       <LangWidget
                         key={"widget" + l}
@@ -243,20 +251,21 @@ function App() {
                 <b>
                   {name ? name : "Anonymous"} from {cityData.country}
                 </b>
-                ! See your dot on the map in <b className="text-red-600">red</b>
+                ! See your dot on the map!
+                {/* in <b className="text-red-600">red</b> */}
                 .
               </p>
             </>
           )}
 
           {/* buttons */}
-          <div className="flex flex-row items-center text-sm md:text-base justify-center gap-4">
+          <div className="flex flex-row items-center justify-center gap-4 text-sm md:text-base">
             {step < 2 && (
               <button
                 onClick={() =>
                   step > 0 ? setStep((s) => s - 1) : setStep(100)
                 }
-                className="hover:text-slate-800 hover:bg-red-300 text-slate-200 bg-red-600 h-12 px-6 rounded-lg"
+                className="h-12 px-6 bg-red-600 rounded-lg hover:text-slate-800 hover:bg-red-300 text-slate-200"
               >
                 {step == 0 ? "No Thanks" : "Back"}
               </button>
@@ -295,20 +304,32 @@ function App() {
                     });
                   }
 
-                  // //add to db
-                  // axios
-                  //   .post("/../../backend/")
-                  //   .then((response) => {
-                  //     // Handle success
-                  //     console.log(response.data);
-                  //   })
-                  //   .catch((error) => {
-                  //     // Handle error
-                  //     console.error("Error fetching data:", error);
-                  //   });
+                  //submit
+                  if (step == 1) {
+                    try {
+                      axios.post(
+                        "http://localhost:4002/addpoint",
+                        {
+                          ...cityData,
+                          langs: languages,
+                          name: name,
+                          date: new Date(),
+                        },
+                        {
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                        }
+                      );
+                      fetchPoints();
+                    } catch (error) {
+                      console.error("Error fetching points:", error);
+                    }
+                  }
+
                   setStep((s) => s + 1);
                 }}
-                className="text-white bg-blue-600 hover:bg-blue-400 hover:text-slate-800 h-12 px-6 rounded-lg"
+                className="h-12 px-6 text-white bg-blue-600 rounded-lg hover:bg-blue-400 hover:text-slate-800"
               >
                 {["Next", "Submit", "See the World"][step]}
               </button>
@@ -334,7 +355,14 @@ function App() {
           points
             .filter((p) => (filterLang ? p.langs.includes(filterLang) : true))
             .map((p, i) => (
-              <CircleMarker key={"pt" + i} center={[p.lat, p.lng]} radius={4}>
+              <CircleMarker
+                key={"pt" + i}
+                center={[p.lat, p.lng]}
+                radius={4}
+                color={
+                  cityData.date && new Date(cityData.date).toLocaleString() == new Date(p.date).toLocaleString() ? "#ff0000" : "#0066ff"
+                }
+              >
                 <Popup>
                   {p.name && p.name}
                   {p.name && <br />}
@@ -353,7 +381,7 @@ function App() {
                 </Popup>
               </CircleMarker>
             ))}
-        {cityData.langs &&
+        {/* {cityData.langs &&
           (!filterLang || cityData.langs.includes(filterLang)) &&
           step > 2 && (
             <CircleMarker
@@ -388,7 +416,7 @@ function App() {
                 Submitted on {new Date(cityData.date).toLocaleDateString()}
               </Popup>
             </CircleMarker>
-          )}
+          )} */}
         <RecenterAutomatically lat={lat} lng={lng} />
       </MapContainer>
     </div>
