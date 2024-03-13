@@ -66,7 +66,7 @@ const pointSchema = new mongoose.Schema({
 const Point = mongoose.model("Point", pointSchema);
 
 mongoose.connect(
-  "mongodb+srv://testuser:YbE0dBIUD6vlNmNM@cluster0.whedd3h.mongodb.net/",
+  "mongodb+srv://testuser:Yghew7zbgeQ2NlBN@cluster0.whedd3h.mongodb.net/",
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
