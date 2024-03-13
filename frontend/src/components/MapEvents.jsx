@@ -16,7 +16,6 @@ export default function MapEvents(props) {
       )
         .then((res) => res.json())
         .then((data) => {
-          console.log(data);
           setCityData({ ...data.address, lat: data.lat, lng: data.lon });
         });
     },
