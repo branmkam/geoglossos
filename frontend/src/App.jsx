@@ -61,8 +61,8 @@ function App() {
 
   const fetchPoints = async () => {
     try {
-      const response = await axios.get("http://localhost:4002/points"); // Fetch points from our API
-      setPoints(response.data); // Update state with fetched points
+      const response = await axios.get("/.netlify/functions/points/"); // Fetch points from our API
+      setPoints(JSON.parse(response.data)); // Update state with fetched points
     } catch (error) {
       console.error("Error fetching points:", error);
     }
@@ -252,8 +252,7 @@ function App() {
                   {name ? name : "Anonymous"} from {cityData.country}
                 </b>
                 ! See your dot on the map!
-                {/* in <b className="text-red-600">red</b> */}
-                .
+                {/* in <b className="text-red-600">red</b> */}.
               </p>
             </>
           )}
@@ -305,10 +304,10 @@ function App() {
                   }
 
                   //submit
-                  if (step == 1) {
+                  if (step == 1 && languages.length > 0) {
                     try {
                       axios.post(
-                        "http://localhost:4002/addpoint",
+                        "/.netlify/functions/addpoint",
                         {
                           ...cityData,
                           langs: languages,
@@ -321,13 +320,14 @@ function App() {
                           },
                         }
                       );
+                      setStep((s) => s + 1);
                       fetchPoints();
                     } catch (error) {
                       console.error("Error fetching points:", error);
                     }
+                  } else if (step !== 1) {
+                    setStep((s) => s + 1);
                   }
-
-                  setStep((s) => s + 1);
                 }}
                 className="h-12 px-6 text-white bg-blue-600 rounded-lg hover:bg-blue-400 hover:text-slate-800"
               >
@@ -360,7 +360,11 @@ function App() {
                 center={[p.lat, p.lng]}
                 radius={4}
                 color={
-                  cityData.date && new Date(cityData.date).toLocaleString() == new Date(p.date).toLocaleString() ? "#ff0000" : "#0066ff"
+                  cityData.date &&
+                  new Date(cityData.date).toLocaleString() ==
+                    new Date(p.date).toLocaleString()
+                    ? "#ff0000"
+                    : "#0066ff"
                 }
               >
                 <Popup>
