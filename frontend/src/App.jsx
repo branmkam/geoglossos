@@ -102,10 +102,10 @@ function App() {
       {help && (
         <div className="fixed right-2 w-64 md:w-96 border-[1px] border-black top-10 md:top-14 z-40 px-1 py-2 rounded-md bg-[#ffffffaa]">
           <p className="text-sm">
-            <b>Geoglossos</b> is a community-based log of people's homes and the
-            languages they speak. Through this data, we can explore the patterns
-            of human settlement as well as what regions people choose to learn
-            various languages.
+            <b>Geoglossos</b> (from the Greek for "earth" and "language") is a
+            community-based log of people's homes and the languages they speak.
+            Through this data, we can explore the patterns of human settlement
+            as well as what regions people choose to learn various languages.
           </p>
         </div>
       )}
