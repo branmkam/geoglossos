@@ -78,7 +78,7 @@ function App() {
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen text-base text-center md:text-lg font-oxygen">
       <div
-        className={`flex flex-col items-start gap-2 font-oxygen z-40 fixed top-2 left-2 ${
+        className={`flex flex-col items-start gap-0.5 font-oxygen z-40 fixed top-2 left-2 ${
           dark ? "text-slate-300" : "text-slate-800"
         }`}
       >
