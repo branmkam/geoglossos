@@ -89,11 +89,11 @@ function App() {
             <AnimatedNumber end={points.length} duration={1.5} />{" "}
           </span>
           <span className="text-base md:text-lg">geoglossers</span>
-            <FontAwesomeIcon
+            {/* <FontAwesomeIcon
               onClick={fetchPoints}
               className="hover:text-red-600 text-base"
               fa={faRefresh}
-            />
+            /> */}
         </div>
       </div>
 
@@ -411,7 +411,7 @@ function App() {
                     </i>
                     <br />
                     <b>
-                      {p.langs.map((l) => c[l].replace("; ", "/")).join(", ")}
+                      {p.langs && p.langs.map((l) => c[l].replaceAll("; ", "/")).join(", ")}
                     </b>
                     <br />
                     Submitted on {new Date(p.date).toLocaleDateString()}

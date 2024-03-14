@@ -7,7 +7,7 @@ export default function Autocomplete(props) {
   const [value, setValue] = useState("");
   const [selected, setSelected] = useState(null);
 
-  let ids = Object.keys(c);
+  let ids = Object.keys(c).sort((a, b) => a.toLocaleLowerCase() - b.toLocaleLowerCase());
 
   return (
     <div className="w-full h-48 sm:h-64 md:h-80 flex flex-col justify-end gap-0">
@@ -45,7 +45,8 @@ export default function Autocomplete(props) {
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-r        className="w-full p-1 border-2 border-black rounded-lg sm:text-lg md:text-xl"
+        r
+        className="w-full p-1 border-2 border-black rounded-lg sm:text-lg md:text-xl"
         placeholder="Type name here..."
       />
     </div>
