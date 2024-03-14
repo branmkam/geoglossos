@@ -62,7 +62,7 @@ function App() {
   const fetchPoints = async () => {
     try {
       const response = await axios.get("/.netlify/functions/points/"); // Fetch points from our API
-      setPoints(JSON.parse(response.data)); // Update state with fetched points
+      setPoints(response.data); // Update state with fetched points
     } catch (error) {
       console.error("Error fetching points:", error);
     }
@@ -71,10 +71,6 @@ function App() {
   useEffect(() => {
     fetchPoints();
   }, []);
-
-  useEffect(() => {
-    console.log(cityData);
-  }, [cityData]);
 
   return (
     <div className="flex flex-col items-center justify-center w-screen h-screen text-base text-center md:text-lg font-oxygen">
@@ -92,6 +88,15 @@ function App() {
           <span className="text-base md:text-lg">geoglossers</span>
         </div>
       </div>
+
+      {/* veil if not done survey */}
+      {step < 3 && (
+        <div
+          className={`w-screen h-full fixed top-0 left-0 ${
+            dark ? "bg-[#000000aa]" : "bg-[#ffffffaa]"
+          } z-30`}
+        ></div>
+      )}
 
       <ModeToggle dark={dark} setDark={setDark} />
 
@@ -252,7 +257,7 @@ function App() {
                   {name ? name : "Anonymous"} from {cityData.country}
                 </b>
                 ! See your dot on the map!
-                {/* in <b className="text-red-600">red</b> */}.
+                {/* in <b className="text-red-600">red</b> */}
               </p>
             </>
           )}
@@ -272,8 +277,8 @@ function App() {
             {cityData && cityData.country && (
               <button
                 onClick={() => {
+                  let cd = cityData;
                   if (step > 1) {
-                    let cd = cityData;
                     //remove unwanted address properties
                     let prop = [
                       "city",
@@ -308,17 +313,18 @@ function App() {
                     try {
                       axios.post(
                         "/.netlify/functions/addpoint",
-                        {
+                        JSON.stringify({
                           ...cityData,
                           langs: languages,
                           name: name,
                           date: new Date(),
-                        },
-                        {
+                        }),
+                        JSON.stringify({
                           headers: {
                             "Content-Type": "application/json",
                           },
-                        }
+                        }),
+                        {}
                       );
                       setStep((s) => s + 1);
                       fetchPoints();
@@ -354,37 +360,40 @@ function App() {
         {points.length > 0 &&
           points
             .filter((p) => (filterLang ? p.langs.includes(filterLang) : true))
-            .map((p, i) => (
-              <CircleMarker
-                key={"pt" + i}
-                center={[p.lat, p.lng]}
-                radius={4}
-                color={
-                  cityData.date &&
-                  new Date(cityData.date).toLocaleString() ==
-                    new Date(p.date).toLocaleString()
-                    ? "#ff0000"
-                    : "#0066ff"
-                }
-              >
-                <Popup>
-                  {p.name && p.name}
-                  {p.name && <br />}
-                  <i>
-                    {p.city || p.town || p.village || p.county}
-                    {(p.city || p.town || p.village || p.county) && ","}{" "}
-                    {p.state || p.region}
-                    {(p.state || p.region) && ","} {p.country}
-                  </i>
-                  <br />
-                  <b>
-                    {p.langs.map((l) => c[l].replace("; ", "/")).join(", ")}
-                  </b>
-                  <br />
-                  Submitted on {new Date(p.date).toLocaleDateString()}
-                </Popup>
-              </CircleMarker>
-            ))}
+            .map((p, i) => {
+              return (
+                <CircleMarker
+                  key={"pt" + i}
+                  center={[p.lat, p.lng]}
+                  radius={4}
+                  color={
+                    cityData.lat &&
+                    cityData.lng &&
+                    cityData.lat == p.lat &&
+                    cityData.lng == p.lng
+                      ? "#ff0000"
+                      : "#0066ff"
+                  }
+                >
+                  <Popup>
+                    {p.name && p.name}
+                    {p.name && <br />}
+                    <i>
+                      {p.city || p.town || p.village || p.county}
+                      {(p.city || p.town || p.village || p.county) && ","}{" "}
+                      {p.state || p.region}
+                      {(p.state || p.region) && ","} {p.country}
+                    </i>
+                    <br />
+                    <b>
+                      {p.langs.map((l) => c[l].replace("; ", "/")).join(", ")}
+                    </b>
+                    <br />
+                    Submitted on {new Date(p.date).toLocaleDateString()}
+                  </Popup>
+                </CircleMarker>
+              );
+            })}
         {/* {cityData.langs &&
           (!filterLang || cityData.langs.includes(filterLang)) &&
           step > 2 && (

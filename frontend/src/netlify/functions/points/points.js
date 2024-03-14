@@ -62,11 +62,10 @@ const pointSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { collection: MONGODB_COLLECTION }
+  { collection: process.env.MONGODB_COLLECTION }
 );
 
 const Point = mongoose.model("Point", pointSchema);
-console.log(Point);
 
 const handler = async (event) => {
   try {
@@ -83,7 +82,7 @@ const handler = async (event) => {
       // isBase64Encoded: true,
     };
   } catch (error) {
-    return { statusCode: 500, body: error.toString() };
+    return { statusCode: 500, body: 'error: ' + error.toString() };
   }
 };
 

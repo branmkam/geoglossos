@@ -62,7 +62,7 @@ const pointSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { collection: MONGODB_COLLECTION }
+  { collection: process.env.MONGODB_COLLECTION }
 );
 
 const Point = mongoose.model("Point", pointSchema);
@@ -75,7 +75,7 @@ const handler = async (event) => {
     });
 
     const requestBody = event.body;
-    const newPoint = new Point(requestBody);
+    const newPoint = new Point(JSON.parse(requestBody));
     await newPoint.save();
 
     return {
@@ -83,7 +83,7 @@ const handler = async (event) => {
       body: JSON.stringify({ message: `inserted ${newPoint.insertedId}` }),
     };
   } catch (error) {
-    return { statusCode: 500, body: error.toString() };
+    return { statusCode: 500, body: 'error: ' + error.toString() };
   }
 };
 
