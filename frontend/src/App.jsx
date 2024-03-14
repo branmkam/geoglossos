@@ -20,6 +20,8 @@ import GeoglossosName from "./components/GeoglossosName";
 
 import axios from "axios";
 import ModeToggle from "./components/ModeToggle";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 
 function App() {
   const [dark, setDark] = useState(true);
@@ -87,6 +89,11 @@ function App() {
             <AnimatedNumber end={points.length} duration={1.5} />{" "}
           </span>
           <span className="text-base md:text-lg">geoglossers</span>
+            <FontAwesomeIcon
+              onClick={fetchPoints}
+              className="hover:text-red-600 text-base"
+              fa={faRefresh}
+            />
         </div>
       </div>
 
@@ -345,6 +352,7 @@ function App() {
                     }
                   } else if (step !== 1) {
                     setStep((s) => s + 1);
+                    fetchPoints();
                   }
                 }}
                 className="h-12 px-6 text-white bg-blue-600 rounded-lg hover:bg-blue-400 hover:text-slate-800"
