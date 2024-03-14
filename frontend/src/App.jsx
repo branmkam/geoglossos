@@ -32,6 +32,7 @@ function App() {
   const [step, setStep] = useState(0);
   const [languages, setLanguages] = useState([]);
   const [filterLang, setFilterLang] = useState(null);
+  const [help, setHelp] = useState(false);
 
   const [lat, setLat] = useState(50);
   const [lng, setLng] = useState(0);
@@ -98,7 +99,18 @@ function App() {
         ></div>
       )}
 
-      <ModeToggle dark={dark} setDark={setDark} />
+      {help && (
+        <div className="fixed right-2 w-64 md:w-96 border-[1px] border-black top-10 md:top-12 z-40 px-1 py-2 rounded-md bg-[#ffffffaa]">
+          <p className="text-sm">
+            <b>Geoglossos</b> is a community-based log of people's homes and the
+            languages they speak. Through this data, we can explore the patterns
+            of human settlement as well as what regions people choose to learn
+            various languages.
+          </p>
+        </div>
+      )}
+
+      <ModeToggle dark={dark} setDark={setDark} setHelp={setHelp} />
 
       <div className="fixed z-40 text-right right-2 bottom-5">
         <p className={dark ? "text-slate-200" : "text-slate-800"}>
@@ -168,7 +180,7 @@ function App() {
                 zoomControl={false}
               >
                 <TileLayer
-                  attribution="Tiles &copy; Esri"
+                  attribution="Tiles &copy; OpenStreetMap, CARTO"
                   url={`https://{s}.basemaps.cartocdn.com/${
                     dark ? "dark" : "light"
                   }_all/{z}/{x}/{y}.png`}
@@ -348,11 +360,16 @@ function App() {
       <MapContainer
         className="fixed top-0 left-0 z-0 w-screen h-screen m-0"
         center={[lat, lng]}
+        maxBounds={[
+          [89.99999, -180],
+          [-90, 179.9999999],
+        ]}
         zoom={4}
+        minZoom={2}
         zoomControl={false}
       >
         <TileLayer
-          attribution="Tiles &copy; Esri"
+          attribution="Tiles &copy; OpenStreetMap, CARTO"
           url={`https://{s}.basemaps.cartocdn.com/${
             dark ? "dark" : "light"
           }_all/{z}/{x}/{y}.png`}
